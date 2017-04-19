@@ -5,7 +5,8 @@
 //There are 8 regular dataTypes. Anything above that is a function signature.
 #define diff_types(a, b) ( ((a < 8) && (b >= 8)) || ((a >= 8) && (b < 8)) )
 
-
+extern char* typeStr[];
+extern char* strTable[];
 
 //Make a new symbol table with the given parent.
 //Returns a pointer to the new table.
@@ -128,12 +129,12 @@ int get_arr_size(symtab* table, int id_index)
 
   while (this)
   {
-    for (i=0; i<(table->sym_count); i++)
+    for (i=0; i<(this->sym_count); i++)
     {
-      if ((table->symbols[i].id_index == id_index) &&
-          (table->symbols[i].type < 8) &&
-          (table->symbols[i].type > 2))
-        return table->symbols[i].arr_size;
+      if ((this->symbols[i].id_index == id_index) &&
+          (this->symbols[i].type < 8) &&
+          (this->symbols[i].type > 2))
+        return this->symbols[i].arr_size;
     }
 
     this = this->parent;
@@ -144,7 +145,7 @@ int get_arr_size(symtab* table, int id_index)
 
 
 
-//Debug function to print information about the given 
+//Debug function to print information about the given
 //symbol table and all children.
 void print_symtab(symtab* table, int spacing)
 {
@@ -157,8 +158,12 @@ void print_symtab(symtab* table, int spacing)
     for (c=0; c<spacing; c++)
       fprintf(stdout, "  ");
 
-    fprintf(stdout, "<%d, %d, %d>\n",\
-      table->symbols[i].id_index, table->symbols[i].type, table->symbols[i].scope);
+    fprintf(stdout, "<%s, ", strTable[table->symbols[i].id_index]);
+    if (table->symbols[i].type < 8)
+      fprintf(stdout, "%s", typeStr[table->symbols[i].type]);
+    else
+      fprintf(stdout, "func:%d", table->symbols[i].type);
+    fprintf(stdout, ", scope:%d>\n", table->symbols[i].scope);
   }
 
   for (i=0; i<(table->children_count); i++)
