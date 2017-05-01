@@ -14,6 +14,7 @@ b	_start
 
 /*
 Prints a signed integer to the display
+Signed integer value expected in r0.
 Note: adds a newline to the end of the output.
 no registers are affected after exit
 */
