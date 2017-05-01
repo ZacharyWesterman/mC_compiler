@@ -114,7 +114,8 @@ int checkSemantics(tree* this)
     int id = this->children[1]->val;
 
     //if the function has been previously defined
-    if (!SYM_insert(table, id, type, 0, current_scope))
+    //("output" function or user-defined)
+    if (!id || !SYM_insert(table, id, type, 0, current_scope))
     {
       fprintf(stderr, "Error: %d: Function '%s()' already defined",\
       this->line, strTable[id]);
@@ -271,45 +272,51 @@ int checkSemantics(tree* this)
   {
     int id = this->children[0]->val;
 
-    //the function is undefined
-    if (!func_exists(id))
+    //if the called function is "output",
+    //then just accept it. No error checking.
+    if (id)
     {
-      fprintf(stderr, "Error: %d: Function '%s()' not defined\n",\
-      this->line, strTable[id]);
 
-      prev_param_count = 0;
-      return 1;
-    }
+      //the function is undefined
+      if (!func_exists(id))
+      {
+        fprintf(stderr, "Error: %d: Function '%s()' not defined\n",\
+        this->line, strTable[id]);
 
-    int ref_func = get_func_index(id);
+        prev_param_count = 0;
+        return 1;
+      }
 
-    symtab* global;
-    if (table->parent)
-      global = table->parent;
-    else
-      global = table;
+      int ref_func = get_func_index(id);
 
-    //get the function signature
-    int func_sig = global->symbols[ref_func].type - 8;
+      symtab* global;
+      if (table->parent)
+        global = table->parent;
+      else
+        global = table;
 
-    lastType = get_sig_type(func_sig);
+      //get the function signature
+      int func_sig = global->symbols[ref_func].type - 8;
 
-    //check that all the parameters are correct
-    int call_check = check_called_func(func_sig);
+      lastType = get_sig_type(func_sig);
 
-    //if incorrect number of parameters
-    if (call_check == 1)
-    {
-      fprintf(stderr, "Error: %d: Incorrect number of parameters for function '%s()'\n",\
-      this->line, strTable[id]);
-      error++;
-    }
-    //if one or more parameters is of an incorrect type
-    else if (call_check == 2)
-    {
-      fprintf(stderr, "Error: %d: Parameter mismatch in function call '%s()'\n",\
-      this->line, strTable[id]);
-      error++;
+      //check that all the parameters are correct
+      int call_check = check_called_func(func_sig);
+
+      //if incorrect number of parameters
+      if (call_check == 1)
+      {
+        fprintf(stderr, "Error: %d: Incorrect number of parameters for function '%s()'\n",\
+        this->line, strTable[id]);
+        error++;
+      }
+      //if one or more parameters is of an incorrect type
+      else if (call_check == 2)
+      {
+        fprintf(stderr, "Error: %d: Parameter mismatch in function call '%s()'\n",\
+        this->line, strTable[id]);
+        error++;
+      }
     }
 
     prev_param_count = 0;
