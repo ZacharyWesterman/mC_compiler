@@ -10,8 +10,14 @@ extern symtab* table;
 extern int yyparse();
 extern void yyset_in(FILE*);
 
+extern int ST_insert(const char*);
+
 int main(int argc, char* argv[])
 {
+  //make symbol "output" defined (will be symbol 0)
+  ST_insert("output");
+
+
   FILE *input;
   FILE *output;
 
