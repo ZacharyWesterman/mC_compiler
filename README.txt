@@ -14,10 +14,10 @@ func_signature.c   func_signature.h
 
 Dependencies:
 
-flex
-yacc
-gcc
-make
+	flex
+	yacc
+	gcc
+	make
 
 To build, run make.
 
