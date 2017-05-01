@@ -1,8 +1,6 @@
-A minimal-C compiler.
+This compiler generates ARM assembly (for the Raspberry Pi, specifically).
 
-Currently at the semantic analysis phase.
-
-Files required to build parser:
+Files required to build compiler:
 
        scanner.l   parser.y
         strtab.c   strtab.h
@@ -14,5 +12,12 @@ func_signature.c   func_signature.h
         driver.c
         makefile
 
+Dependencies:
 
-To build, just run make.
+flex
+yacc
+gcc
+make
+
+To build, run make.
+
