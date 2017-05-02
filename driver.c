@@ -2,6 +2,8 @@
 #include "semantics.h"
 #include "symtab.h"
 
+#include "asm_instr_list.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -13,6 +15,7 @@ extern void yyset_in(FILE*);
 
 extern int ST_insert(const char*);
 
+extern instr* instr_list;
 
 
 //compiler flags
@@ -66,10 +69,12 @@ int get_in_param(int argc, char* argv[])
   return 0;
 }
 
-int get_out_param(int argc, int in_param)
+int get_out_param(int argc, char* argv[], int in_param)
 {
-  if (in_param && (argc > (in_param + 1)))
-    return (in_param + 1);
+  int i;
+  for (i=in_param+1; i<argc; i++)
+    if (argv[i][0] != '-')
+      return i;
 
   return 0;
 }
@@ -93,7 +98,7 @@ int main(int argc, char* argv[])
   cflags = read_cflags(argc, argv);
 
   in_param = get_in_param(argc, argv);
-  out_param = get_out_param(argc, in_param);
+  out_param = get_out_param(argc, argv, in_param);
 
 
   //make symbol "output" defined (will be symbol 0)
@@ -156,6 +161,9 @@ int main(int argc, char* argv[])
           return -1;
         }
       }
+
+
+      //if we get to this point, we can generate asm code.
     }
   }
 
