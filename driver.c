@@ -18,39 +18,37 @@ extern int ST_insert(const char*);
 //compiler flags
 enum
 {
-  HELP = 1,
-  PRINT_AST = 2,
+  NONE = 	0x00,
+  HELP = 	0x01,
+  PRINT_AST = 	0x02,
 
-  UNKNOWN = 4
+  UNKNOWN = 	0x04
 };
 
 
 int read_cflags(int argc, char* argv[])
 {
-  int cflags_out = 0;
+  int cflags_out = NONE;
+
+  char buf[64];
 
   int i;
   for (i=1; i<argc; i++)
   {
+    strcpy(buf, argv[i]);
+  
     //we have a flag
-    if (argv[i][0] == '-')
+    if (buf[0] == '-')
     {
-      //long flag
-      if (argv[i][1] == '-')
-      {
-        if (!strcmp(&argv[i][2], "help"))
-          cflags_out |= HELP;
-        else
-          cflags_out |= UNKNOWN;
-      }
-      //short flag
+      if (!strcmp(buf, "-h") || !strcmp(argv[i], "--help"))
+        cflags_out |= HELP;
+      if (!strcmp(buf, "-a") || !strcmp(argv[i], "--ast"))
+        cflags_out |= PRINT_AST;
       else
-      {
-        if (!strcmp(&argv[i][1], "h"))
-          cflags_out |= HELP;
-        else
-          cflags_out |= UNKNOWN;
-      }
+        cflags_out |= UNKNOWN;
+
+
+      //fprintf(stdout, "%s [%x]\n", buf, cflags_out);
     }
   }
 
@@ -77,10 +75,12 @@ int get_out_param(int argc, int in_param)
 }
 
 
-void print_help()
+void print_help(char* argv[])
 {
-  fprintf(stdout, "Usage: ./mcc <flags> [input] <output>\n");
-  fprintf(stdout, "Flags:\n\t-h, --help\tDisplay this help text.\n");
+  fprintf(stdout, "Usage: %s <flags> [input] <output>\n", argv[0]);
+  fprintf(stdout, "Flags:\n");
+  fprintf(stdout, "\t-h, --help\tDisplay this help text.\n");
+  fprintf(stdout, "\t-a, --ast\tDisplay the abstract syntax tree.\n");
 }
 
 
@@ -99,9 +99,9 @@ int main(int argc, char* argv[])
   //make symbol "output" defined (will be symbol 0)
   ST_insert("output");
 
-  if ((cflags & HELP) || (cflags & UNKNOWN) || !cflags)
+  if ((cflags & HELP) || (cflags & UNKNOWN))
   {
-    print_help();
+    print_help(argv);
   }
   else
   {
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-      print_help();
+      print_help(argv);
       return -1;
     }
 
@@ -129,7 +129,10 @@ int main(int argc, char* argv[])
     {
       fclose(input);
 
-      //printAst(ast, 1);
+
+      if (cflags & PRINT_AST)
+        printAst(ast, 1);
+
 
       if (checkSemantics(ast))
         return -1;
@@ -153,12 +156,7 @@ int main(int argc, char* argv[])
           return -1;
         }
       }
-
-      fclose(output);
     }
-    
-
-    fclose(input);
   }
 
   return 0;
