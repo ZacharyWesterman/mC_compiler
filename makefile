@@ -3,7 +3,7 @@ GRAMMAR = parser.y
 CFLAGS = -I. -funsigned-char -g -DYYDEBUG
 YFLAGS = -v -d
 
-OBJFILES = y.tab.o lex.yy.o tree.o strtab.o symtab.o semantics.o func_signature.o driver.o
+OBJFILES = y.tab.o lex.yy.o tree.o strtab.o symtab.o semantics.o func_signature.o asm_instr_list.o driver.o
 
 
 mcc: $(OBJFILES)
@@ -39,6 +39,8 @@ semantics.o: semantics.c semantics.h
 func_signature.o: func_signature.c func_signature.h
 	gcc $(CFLAGS) -c func_signature.c
 
+asm_instr_list.o: asm_instr_list.c asm_instr_list.h
+	gcc $(CFLAGS) -c asm_instr_list.c
 
 
 clean:
