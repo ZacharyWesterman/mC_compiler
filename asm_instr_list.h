@@ -1,12 +1,18 @@
 #ifndef ASM_INSTR_LIST
 #define ASM_INSTR_LIST
 
+#include <stdio.h>
+
 #define INSTR_BUF_CT 1000
 
 #define GEN_REG_COUNT 13
 
 #define LITERAL_MAX 255
 #define REGISTER 256
+
+#define GLOBL_OUTPUT 0
+#define GLOBL_ENTRY -1
+#define GLOBL_I_DIV -2
 
 
 typedef struct instruction instr;
@@ -22,6 +28,10 @@ struct instruction
 
 
 void add_instr(int type, int param1, int param2, int param3);
+void gen_header();
+void gen_footer();
+
+void output_asm(FILE*);
 
 
 //enumerate ARM instruction types
@@ -30,6 +40,9 @@ enum
   SEG_DATA,	//.data segment
   SEG_TEXT,	//.text (program) segment
   SEG_END,	//.end (end of program)
+
+  GLOBL_LBL,	//define a label as global
+  LABEL,	//insert a label
 
   BALIGN,	//byte-align (usu. 4)
 
@@ -62,7 +75,7 @@ enum
 
   ORR,		//OR
 
-  RSB		//reverse subtract
+  RSB,		//reverse subtract
   RSC,		//reverse subtract with carry
 
   SBC,		//subtract with carry
