@@ -13,6 +13,26 @@
 #define GLOBL_OUTPUT 0
 #define GLOBL_ENTRY -1
 #define GLOBL_I_DIV -2
+#define SUB_LABEL   -3
+
+#define SP (REGISTER+13)
+#define LR (REGISTER+14)
+#define PC (REGISTER+15)
+#define APSR (REGISTER+16)
+
+#define R0 (REGISTER)
+#define R1 (REGISTER+1)
+#define R2 (REGISTER+2)
+#define R3 (REGISTER+3)
+#define R4 (REGISTER+4)
+#define R5 (REGISTER+5)
+#define R6 (REGISTER+6)
+#define R7 (REGISTER+7)
+#define R8 (REGISTER+8)
+#define R9 (REGISTER+9)
+#define R10 (REGISTER+10)
+#define R11 (REGISTER+11)
+#define R12 (REGISTER+12)
 
 
 typedef struct instruction instr;
@@ -37,12 +57,15 @@ void output_asm(FILE*);
 //enumerate ARM instruction types
 enum
 {
+  IGNORE,  
+
   SEG_DATA,	//.data segment
   SEG_TEXT,	//.text (program) segment
   SEG_END,	//.end (end of program)
 
   GLOBL_LBL,	//define a label as global
   LABEL,	//insert a label
+  SUB_LBL,	//unique labels for loops, etc.
 
   BALIGN,	//byte-align (usu. 4)
 
@@ -50,10 +73,16 @@ enum
   ADD,		//add
   AND,		//AND
   
-  B,		//branch
   BIC,		//bit clear
+  B,		//branch
   BL,		//branch with link
   BX,		//branch and exchange
+  BEQ,		//branch if equal
+  BGE,		//branch if greater or equal
+  BGT,		//branch if greater than
+  BLE,		//branch if less or equal
+  BLT,		//branch if less than
+  BNE,		//branch if not equal
   
   CDP,		//coprocessor data processing
   CMN,		//compare negative
@@ -74,6 +103,9 @@ enum
   MVN,		//move negative register
 
   ORR,		//OR
+
+  PUSH,		//push to stack
+  POP,		//pop from stack
 
   RSB,		//reverse subtract
   RSC,		//reverse subtract with carry
