@@ -25,70 +25,23 @@ enum
   HELP = 	0x01,
   PRINT_AST = 	0x02,
 
-  UNKNOWN = 	0x04
+  LIST_ASM = 	0x04,
+  NO_OUTPUT = 	0x08,
+
+  UNKNOWN = 	0x10
 };
 
 
-int read_cflags(int argc, char* argv[])
-{
-  int cflags_out = NONE;
+int read_cflags(int argc, char* argv[]);
 
-  char buf[64];
+int get_in_param(int argc, char* argv[]);
 
-  int i;
-  for (i=1; i<argc; i++)
-  {
-    strcpy(buf, argv[i]);
-  
-    //we have a flag
-    if (buf[0] == '-')
-    {
-      if (!strcmp(buf, "-h") || !strcmp(argv[i], "--help"))
-        cflags_out |= HELP;
-      if (!strcmp(buf, "-a") || !strcmp(argv[i], "--ast"))
-        cflags_out |= PRINT_AST;
-      else
-        cflags_out |= UNKNOWN;
+int get_out_param(int argc, char* argv[], int in_param);
+
+void print_help(char* argv[]);
 
 
-      //fprintf(stdout, "%s [%x]\n", buf, cflags_out);
-    }
-  }
-
-  return cflags_out;
-}
-
-
-int get_in_param(int argc, char* argv[])
-{
-  int i;
-  for (i=1; i<argc; i++)
-    if (argv[i][0] != '-')
-      return i;
-
-  return 0;
-}
-
-int get_out_param(int argc, char* argv[], int in_param)
-{
-  int i;
-  for (i=in_param+1; i<argc; i++)
-    if (argv[i][0] != '-')
-      return i;
-
-  return 0;
-}
-
-
-void print_help(char* argv[])
-{
-  fprintf(stdout, "Usage: %s <flags> [input] <output>\n", argv[0]);
-  fprintf(stdout, "Flags:\n");
-  fprintf(stdout, "\t-h, --help\tDisplay this help text.\n");
-  fprintf(stdout, "\t-a, --ast\tDisplay the abstract syntax tree.\n");
-}
-
-
+//MAIN
 int main(int argc, char* argv[])
 {
   int cflags;
@@ -103,6 +56,8 @@ int main(int argc, char* argv[])
 
   //make symbol "output" defined (will be symbol 0)
   ST_insert("output");
+  //function "main" will be the entry point (symbol 1)
+  ST_insert("main");
 
   if ((cflags & HELP) || (cflags & UNKNOWN))
   {
@@ -144,28 +99,112 @@ int main(int argc, char* argv[])
 
       //print_symtab(table, 1);
 
-
-      if (out_param)
+      if (!(cflags & NO_OUTPUT))
       {
-        if (!(output = fopen(argv[out_param], "w")))
+        if (out_param)
         {
-          fprintf(stderr, "Error opening output file '%s'.\n", argv[out_param]);
-          return -1;
+          if (!(output = fopen(argv[out_param], "w")))
+          {
+            fprintf(stderr, "Error opening output file '%s'.\n", argv[out_param]);
+            return -1;
+          }
         }
-      }
-      else
-      {
-        if (!(output = fopen("arm.s", "w")))
+        else
         {
-          fprintf(stderr, "Error opening output file 'arm.s'.\n");
-          return -1;
+          if (!(output = fopen("arm.s", "w")))
+          {
+            fprintf(stderr, "Error opening output file 'arm.s'.\n");
+            return -1;
+          }
         }
       }
 
 
       //if we get to this point, we can generate asm code.
+
+      //assembly header
+      gen_header();
+
+      //assembly footer
+      gen_footer();
+
+      //output assembly
+      if (cflags & LIST_ASM)
+        output_asm(stdout);      
+
+      if (!(cflags & NO_OUTPUT))
+        output_asm(output);
     }
   }
 
   return 0;
+}
+//End of MAIN
+
+
+
+
+int read_cflags(int argc, char* argv[])
+{
+  int cflags_out = NONE;
+
+  char buf[64];
+
+  int i;
+  for (i=1; i<argc; i++)
+  {
+    strcpy(buf, argv[i]);
+  
+    //we have a flag
+    if (buf[0] == '-')
+    {
+      if (!strcmp(buf, "-h") || !strcmp(argv[i], "--help"))
+        cflags_out |= HELP;
+      else if (!strcmp(buf, "-a") || !strcmp(argv[i], "--ast"))
+        cflags_out |= PRINT_AST;
+      else if (!strcmp(buf, "-l") || !strcmp(argv[i], "--list-asm"))
+        cflags_out |= LIST_ASM;
+      else if (!strcmp(buf, "-n") || !strcmp(argv[i], "--no-output"))
+        cflags_out |= NO_OUTPUT;
+      else
+        cflags_out |= UNKNOWN;
+
+
+      //fprintf(stdout, "%s [%x]\n", buf, cflags_out);
+    }
+  }
+
+  return cflags_out;
+}
+
+
+int get_in_param(int argc, char* argv[])
+{
+  int i;
+  for (i=1; i<argc; i++)
+    if (argv[i][0] != '-')
+      return i;
+
+  return 0;
+}
+
+int get_out_param(int argc, char* argv[], int in_param)
+{
+  int i;
+  for (i=in_param+1; i<argc; i++)
+    if (argv[i][0] != '-')
+      return i;
+
+  return 0;
+}
+
+
+void print_help(char* argv[])
+{
+  fprintf(stdout, "Usage: %s <flags> [input] <output>\n", argv[0]);
+  fprintf(stdout, "Flags:\n");
+  fprintf(stdout, "\t-h, --help\tDisplay this help text.\n");
+  fprintf(stdout, "\t-a, --ast\tDisplay the abstract syntax tree.\n");
+  fprintf(stdout, "\t-l, --list-asm\tShow generated ARM assembly.\n");
+  fprintf(stdout, "\t-n, --no-output\tDo not create an output file.\n");
 }
