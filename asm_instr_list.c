@@ -75,7 +75,7 @@ void output_asm(FILE* file_out)
       }
       else if (type == SEG_END)
       {
-        fprintf(file_out, ".end\n");
+        fprintf(file_out, ".end\n\n");
       }
 
       else if (type == GLOBL_LBL)
