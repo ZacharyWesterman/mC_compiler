@@ -92,6 +92,20 @@ void generate_asm(tree* ast)
 
       add_instr(POP, R2, PC, 0); 
     }
+    //RETURN statement. moves R1 into R0(return value)
+    //By default, statement "return;" returns 0.
+    else if (ast->nodeKind == RETURN)
+    {
+      if (ast->numChildren)
+      {
+        generate_asm(ast->children[0]);
+        add_instr(MOV, R0, R1, 0);
+      }
+      else
+      {
+        add_instr(MOV, R0, 0, 0);
+      }
+    }
     else
     {
       if (ast->nodeKind == PROGRAM)
