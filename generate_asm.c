@@ -3,12 +3,29 @@
 #define OPER_ADD 266
 #define OPER_MUL 268
 
+int scope;
+
 void generate_asm(tree* ast)
 {
   if (ast)
   {
+    //Declaring variables
+    if (ast->nodeKind == VARDECL)
+    {
+      //if the variable is local
+      if (scope)
+      {
+
+      }
+      //if the variable is global
+      else
+      {
+        add_data(LABEL, DATA_LABEL, ast->children[1]->val, 0);
+        add_data(WORD, 0, 0, 0);
+      }
+    }
     //Integer literals are loaded to R0
-    if (ast->nodeKind == INTEGER)
+    else if (ast->nodeKind == INTEGER)
     {
       if ((ast->val) > LITERAL_MAX)
       {
@@ -66,7 +83,9 @@ void generate_asm(tree* ast)
       for (i=R3; i<R12; i+=2)
         add_instr(PUSH, i, i+1, 0);         
 
+      scope++;
       generate_asm(ast->children[2]);
+      scope--;
 
       for (i=R12; i>=R3; i-=2)
         add_instr(POP, i-1, i, 0); 
@@ -75,6 +94,9 @@ void generate_asm(tree* ast)
     }
     else
     {
+      if (ast->nodeKind == PROGRAM)
+        scope = 0;
+   
       int i;
       for (i=0; i<(ast->numChildren); i++)
         generate_asm(ast->children[i]);
