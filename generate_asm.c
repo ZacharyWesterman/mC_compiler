@@ -10,8 +10,11 @@ void generate_asm(tree* ast)
     {
       if ((ast->val) > LITERAL_MAX)
       {
-        add_data(LABEL, CONST_LABEL, ast->val, 0);
-        add_data(WORD, ast->val, 0, 0);
+        if (!data_label_exists(CONST_LABEL, ast->val))
+        {
+          add_data(LABEL, CONST_LABEL, ast->val, 0);
+          add_data(WORD, ast->val, 0, 0);
+        }
 
         add_instr(LDR, R0, CONST_LABEL, ast->val);
         add_instr(LDR, R0, R0, 0);
