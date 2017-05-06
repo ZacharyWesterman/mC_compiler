@@ -5,6 +5,8 @@
 
 #define INSTR_BUF_CT 1000
 
+#define INSTR_MAX_PARAMS 16
+
 #define GEN_REG_COUNT 13
 
 #define LITERAL_MAX 255
@@ -41,9 +43,7 @@ struct instruction
 {
   int type;
 
-  int param1;
-  int param2;
-  int param3;
+  int param[INSTR_MAX_PARAMS];
 };
 
 
