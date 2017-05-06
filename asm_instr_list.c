@@ -214,7 +214,7 @@ void gen_header()
 {
   add_instr(SEG_TEXT, 0,0,0);
   add_instr(BALIGN, 4, 0, 0);
-  add_instr(GLOBL_LBL, GLOBL_ENTRY,0,0);
+  add_instr(GLOBL, GLOBL_ENTRY,0,0);
 
   add_instr(B, GLOBL_ENTRY,0,0);
 
@@ -360,7 +360,7 @@ void output_asm(FILE* file_out)
         fprintf(file_out, ".word %d\n", param1);
       }
 
-      else if (type == GLOBL_LBL)
+      else if (type == GLOBL)
       {
         fprintf(file_out, ".global ");
         output_label(file_out, param1, param2);
@@ -372,9 +372,23 @@ void output_asm(FILE* file_out)
         fprintf(file_out, ":\n");
       }
 
-      else if (type == ADD)
+      else if ((type >= ADC) && (type <= ORR))
       {
-        fprintf(file_out, "add ");
+        if (type == ADD)
+          fprintf(file_out, "add ");
+        else if (type == SUB)
+          fprintf(file_out, "sub ");
+        else if (type == MUL)
+          fprintf(file_out, "mul ");
+        else if (type == AND)
+          fprintf(file_out, "and ");
+        else if (type == BIC)
+          fprintf(file_out, "bic ");
+        else if (type == EOR)
+          fprintf(file_out, "eor ");
+        else if (type == ORR)
+          fprintf(file_out, "orr ");
+
         output_register(file_out, param1);
 
         fprintf(file_out, ", ");
@@ -426,16 +440,24 @@ void output_asm(FILE* file_out)
         fprintf(file_out, "\n");
       }
 
-      else if (type == LDR)
+      else if ((type == LDR) || (type == STR))
       {
-        fprintf(file_out, "ldr ");
+        if (type == LDR)
+          fprintf(file_out, "ldr ");
+        else if (type == STR)
+          fprintf(file_out, "str ");
+
         output_str_ldr(file_out, &instr_list[i]);
         fprintf(file_out, "\n");
       }
 
-      else if (type == MOV)
+      else if ((type == MOV) || (type == SWP))
       {
-        fprintf(file_out, "mov ");
+        if (type == MOV)
+          fprintf(file_out, "mov ");
+        else if (type == SWP)
+          fprintf(file_out, "swp ");
+
         output_register(file_out, param1);
 
         fprintf(file_out, ", ");
@@ -457,25 +479,6 @@ void output_asm(FILE* file_out)
         fprintf(file_out, "\n");
       }
 
-      else if (type == STR)
-      {
-        fprintf(file_out, "str ");
-        output_str_ldr(file_out, &instr_list[i]);
-        fprintf(file_out, "\n");
-      }
-      else if (type == SUB)
-      {
-        fprintf(file_out, "sub ");
-        output_register(file_out, param1);
-
-        fprintf(file_out, ", ");
-        output_register(file_out, param2);
-
-        fprintf(file_out, ", ");
-        output_register(file_out, param3);
-
-        fprintf(file_out, "\n");
-      }
       else if (type == SWI)
       {
         fprintf(file_out, "swi 0\n");
