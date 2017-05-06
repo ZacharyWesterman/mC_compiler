@@ -1,5 +1,7 @@
 #include "generate_asm.h"
 
+#define OPER_ADD 266
+#define OPER_MUL 268
 
 void generate_asm(tree* ast)
 {
@@ -22,6 +24,33 @@ void generate_asm(tree* ast)
       else
       {
         add_instr(MOV, R0, ast->val, 0);
+      }
+    }
+    //addition or subtraction
+    else if (ast->nodeKind == ADDEXPR)
+    {
+      generate_asm(ast->children[0]);
+      add_instr(MOV, R2, R0, 0);
+      generate_asm(ast->children[2]);
+
+      if (ast->children[1]->val == OPER_ADD)
+        add_instr(ADD, R0, R2, R0);
+      else
+        add_instr(SUB, R0, R2, R0);
+    }
+    //multiplication or division
+    else if (ast->nodeKind == TERM)
+    {
+      generate_asm(ast->children[2]);
+      add_instr(MOV, R2, R0, 0);
+      generate_asm(ast->children[0]);
+
+      if (ast->children[1]->val == OPER_MUL)
+        add_instr(MUL, R0, R2, R0);
+      else
+      {
+        add_instr(MOV, R1, R2, 0);
+        add_instr(BL, GLOBL_I_DIV, 0,0);
       }
     }
     //Functions save all registers except R0 and R1.
