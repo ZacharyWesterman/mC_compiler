@@ -58,6 +58,20 @@ void add_data(int type, int param1, int param2, int param3)
   }
 }
 
+int data_label_exists(int param1, int param2)
+{
+  int i;
+  for (i=0; i<current_data; i++)
+  {
+    if ((data_list[i].type == LABEL) &&
+        (data_list[i].param[0] == param1) &&
+        (data_list[i].param[1] == param2))
+      return 1;
+  }
+
+  return 0;
+}
+
 
 void gen_fn_output()
 {
@@ -372,7 +386,7 @@ void output_asm(FILE* file_out)
         fprintf(file_out, ":\n");
       }
 
-      else if ((type >= ADC) && (type <= ORR))
+      else if ((type >= ADD) && (type <= ORR))
       {
         if (type == ADD)
           fprintf(file_out, "add ");

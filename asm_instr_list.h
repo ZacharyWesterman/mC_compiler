@@ -54,6 +54,7 @@ void gen_header();
 void gen_footer();
 
 void add_data(int type, int param1, int param2, int param3);
+int data_label_exists(int param1, int param2);
 
 void output_asm(FILE*);
 
