@@ -28,7 +28,9 @@ enum
   LIST_ASM = 	0x04,
   NO_OUTPUT = 	0x08,
 
-  UNKNOWN = 	0x10
+  GEN_MAKEFILE =0x10,
+
+  UNKNOWN = 	0x20
 };
 
 
@@ -39,6 +41,33 @@ int get_in_param(int argc, char* argv[]);
 int get_out_param(int argc, char* argv[], int in_param);
 
 void print_help(char* argv[]);
+
+void create_makefile(const char* finput)
+{
+  FILE* makefile = fopen("Makefile", "w");
+
+  if (makefile)
+  {
+    char buf[64];
+    strcpy(buf, finput);
+
+    int length = 0;
+    while (buf[length] != 0)
+      length++;
+
+    while (buf[length] != '.')
+      length--;
+
+    buf[length] = 0;
+
+
+    fprintf(makefile, "%s: %s.o\n\tld -o %s %s.o\n\n", buf, buf, buf, buf);
+    fprintf(makefile, "%s.o: %s\n\tas -o %s.o %s\n\n", buf, finput, buf, finput);
+    fprintf(makefile, "clean:\n\trm -vf %s.o %s", buf, buf);
+
+    fclose(makefile);
+  }
+}
 
 
 //MAIN
@@ -99,6 +128,9 @@ int main(int argc, char* argv[])
 
       //print_symtab(table, 1);
 
+      char foutbuf[64];
+      foutbuf[0] = 0;
+
       if (!(cflags & NO_OUTPUT))
       {
         if (out_param)
@@ -108,6 +140,8 @@ int main(int argc, char* argv[])
             fprintf(stderr, "Error opening output file '%s'.\n", argv[out_param]);
             return -1;
           }
+
+          strcpy(foutbuf, argv[out_param]);
         }
         else
         {
@@ -116,11 +150,17 @@ int main(int argc, char* argv[])
             fprintf(stderr, "Error opening output file 'arm.s'.\n");
             return -1;
           }
+
+          strcpy(foutbuf, "arm.s");
         }
       }
 
 
       //if we get to this point, we can generate asm code.
+
+      if ((cflags & GEN_MAKEFILE) && !(cflags & NO_OUTPUT))
+        create_makefile(foutbuf);
+
 
       //assembly header
       gen_header();
@@ -166,6 +206,8 @@ int read_cflags(int argc, char* argv[])
         cflags_out |= LIST_ASM;
       else if (!strcmp(buf, "-n") || !strcmp(argv[i], "--no-output"))
         cflags_out |= NO_OUTPUT;
+      else if (!strcmp(buf, "-m") || !strcmp(argv[i], "--makefile"))
+        cflags_out |= GEN_MAKEFILE;
       else
         cflags_out |= UNKNOWN;
 
@@ -207,4 +249,5 @@ void print_help(char* argv[])
   fprintf(stdout, "\t-a, --ast\tDisplay the abstract syntax tree.\n");
   fprintf(stdout, "\t-l, --list-asm\tShow generated ARM assembly.\n");
   fprintf(stdout, "\t-n, --no-output\tDo not create an output file.\n");
+  fprintf(stdout, "\t-m, --makefile\tGenerate a makefile for the output.\n");
 }
