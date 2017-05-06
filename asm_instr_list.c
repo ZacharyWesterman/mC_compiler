@@ -186,6 +186,7 @@ void gen_int_div()
 void gen_header()
 {
   add_instr(SEG_TEXT, 0,0,0);
+  add_instr(BALIGN, 4, 0, 0);
   add_instr(GLOBL_LBL, GLOBL_ENTRY,0,0);
 
   add_instr(B, GLOBL_ENTRY,0,0);
@@ -196,13 +197,8 @@ void gen_header()
   sub_lbl_ctr = 8;
 
   add_instr(LABEL, GLOBL_ENTRY,0,0);
-  
-//TEST CODE HERE - tests output & division
 
-  add_instr(MOV, R0, 123, 0);
-  add_instr(BL, GLOBL_OUTPUT, 0, 0);
-
-  //add_instr(BL, 1,0,0); //break to "main" function
+  add_instr(BL, 1,0,0); //break to "main" function
 
   add_instr(MOV, R7, 1, 0); //then call to exit
   add_instr(SWI, 0,0,0);
@@ -344,6 +340,10 @@ void output_asm(FILE* file_out)
 
         output_label(file_out, param1, param2);
         fprintf(file_out, "\n");
+      }
+      else if (type == BALIGN)
+      {
+        fprintf(file_out, ".balign %d\n", param1);
       }
 
       else if (type == CMP)
