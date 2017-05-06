@@ -69,17 +69,20 @@ enum
 
   WORD,		//store global word (.word)
 
-  GLOBL_LBL,	//define a label as global
+  GLOBL,	//define a label as global
   LABEL,	//insert a label
-  SUB_LBL,	//unique labels for loops, etc.
 
   BALIGN,	//byte-align (usu. 4)
 
-  ADC,		//add with carry
+  //ADC,		//add with carry
   ADD,		//add
-  AND,		//AND
-  
-  BIC,		//bit clear
+  SUB,		//subtract
+  MUL,		//multiply
+  AND,		//bitwise AND
+  BIC,		//bit clear [dest = op1 AND (NOT op2)]
+  EOR,		//bitwise exclusive OR
+  ORR,		//bitwise OR
+
   B,		//branch
   BL,		//branch with link
   BX,		//branch and exchange
@@ -90,39 +93,34 @@ enum
   BLT,		//branch if less than
   BNE,		//branch if not equal
   
-  CDP,		//coprocessor data processing
-  CMN,		//compare negative
+  //CDP,		//coprocessor data processing
+  //CMN,		//compare negative
   CMP,		//compare
 
-  EOR,		//exclusive OR
-
-  LDC,		//load coprocessor from memory
-  LDM, 		//load multiple registers (pop)
+  //LDC,		//load coprocessor from memory
+  //LDM, 		//load multiple registers (pop)
   LDR,		//load register from memory
+  STR,		//store register to memory
 
-  MCR,		//move CPU register to coprocessor register
-  MLA,		//multiply accumulate
+  //MCR,		//move CPU register to coprocessor register
+  //MLA,		//multiply accumulate (
+  //MRC,		//move from coprocessor register to CPU register
+  //MRS,		//move PSR status/flags to register
+  //MVN,		//move negative register
   MOV,		//move register or constant
-  MRC,		//move from coprocessor register to CPU register
-  MRS,		//move PSR status/flags to register
-  MUL,		//multiply
-  MVN,		//move negative register
-
-  ORR,		//OR
+  SWP,		//swap registers
 
   PUSH,		//push to stack
   POP,		//pop from stack
 
-  RSB,		//reverse subtract
-  RSC,		//reverse subtract with carry
+  //RSB,		//reverse subtract
+  //RSC,		//reverse subtract with carry
 
-  SBC,		//subtract with carry
-  STC,		//store coprocessor register to memory
-  STM,		//store multiple
-  STR,		//store register to memory
-  SUB,		//subtract
+  //SBC,		//subtract with carry
+  //STC,		//store coprocessor register to memory
+  //STM,		//store multiple registers (push)
   SWI,		//software interrupt
-  SWP,		//swap register with memory
+
   TEQ,		//test bitwise equality
   TST,		//test bits
 
