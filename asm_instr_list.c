@@ -7,6 +7,10 @@ instr* instr_list = 0;
 int current_instr = 0;
 int instr_max = 0;
 
+instr* data_list = 0;
+int current_data = 0;
+int data_max = 0;
+
 int sub_lbl_ctr = 0;
 
 void add_instr(int type, int param1, int param2, int param3)
@@ -28,6 +32,29 @@ void add_instr(int type, int param1, int param2, int param3)
     instr_list[current_instr].param[2] = param3;
 
     current_instr++;
+  }
+}
+
+
+void add_data(int type, int param1, int param2, int param3)
+{
+  if (!data_list)
+  {
+    data_list = (instr*)malloc(sizeof(instr)*INSTR_BUF_CT);
+
+    data_max = INSTR_BUF_CT;
+  }
+
+
+  if (current_data < data_max)
+  {
+    data_list[current_data].type = type;
+
+    data_list[current_data].param[0] = param1;
+    data_list[current_data].param[1] = param2;
+    data_list[current_data].param[2] = param3;
+
+    current_data++;
   }
 }
 
@@ -191,8 +218,8 @@ void gen_header()
 
   add_instr(B, GLOBL_ENTRY,0,0);
 
-  gen_fn_output();
-  gen_int_div();
+  //gen_fn_output();
+  //gen_int_div();
 
   sub_lbl_ctr = 8;
 
@@ -207,6 +234,18 @@ void gen_header()
 
 void gen_footer()
 {
+  add_instr(SEG_DATA, 0,0,0);
+  add_instr(BALIGN, 4, 0,0);
+  
+  int i;
+  for(i=0; i<current_data; i++)
+  {
+    add_instr(data_list[i].type,
+              data_list[i].param[0],
+              data_list[i].param[1],
+              data_list[i].param[2]);
+  }
+
   add_instr(SEG_END, 0,0,0);
 }
 
@@ -239,6 +278,10 @@ void output_label(FILE* file_out, int param1, int param2)
     fprintf(file_out, "_int_div");
   else if (param1 == SUB_LABEL)
     fprintf(file_out, ".l_%d", param2);
+  else if (param1 == DATA_LABEL)
+    fprintf(file_out, "d_%s", strTable[param2]);
+  else if (param1 == CONST_LABEL)
+    fprintf(file_out, "c_%d", param2); 
   else
     fprintf(file_out, "f_%s", strTable[param1]);
 }
@@ -256,6 +299,32 @@ void output_pushpop(FILE* file_out, instr* _inst)
   }
 
   fprintf(file_out, "}");
+}
+
+
+void output_str_ldr(FILE* file_out, instr* _inst)
+{
+  output_register(file_out, _inst->param[0]);
+
+  if (_inst->param[1] < 0)
+  {
+    fprintf(file_out, ", =");
+    output_label(file_out, _inst->param[1], _inst->param[2]);
+  }
+  else
+  {
+    fprintf(file_out, ", [");
+   
+    output_register(file_out, _inst->param[1]);
+
+    if (_inst->param[2])
+    {
+      fprintf(file_out, ", ");
+      output_register(file_out, _inst->param[2]);
+    }
+
+    fprintf(file_out, "]");
+  }
 }
 
 
@@ -286,16 +355,16 @@ void output_asm(FILE* file_out)
         fprintf(file_out, ".end\n\n");
       }
 
+      else if (type == WORD)
+      {
+        fprintf(file_out, ".word %d\n", param1);
+      }
+
       else if (type == GLOBL_LBL)
       {
         fprintf(file_out, ".global ");
         output_label(file_out, param1, param2);
         fprintf(file_out, "\n");
-      }
-      else if (type == LABEL)
-      {
-        output_label(file_out, param1, param2);
-        fprintf(file_out, ":\n");
       }
       else if (type == LABEL)
       {
@@ -360,19 +429,8 @@ void output_asm(FILE* file_out)
       else if (type == LDR)
       {
         fprintf(file_out, "ldr ");
-
-        output_register(file_out, param1);
-
-        fprintf(file_out, ", [");
-        output_register(file_out, param2);
-
-        if (param3)
-        {
-          fprintf(file_out, ", ");
-          output_register(file_out, param3);
-        }
-
-        fprintf(file_out, "]\n");
+        output_str_ldr(file_out, &instr_list[i]);
+        fprintf(file_out, "\n");
       }
 
       else if (type == MOV)
@@ -402,19 +460,8 @@ void output_asm(FILE* file_out)
       else if (type == STR)
       {
         fprintf(file_out, "str ");
-
-        output_register(file_out, param1);
-
-        fprintf(file_out, ", [");
-        output_register(file_out, param2);
-
-        if (param3)
-        {
-          fprintf(file_out, ", ");
-          output_register(file_out, param3);
-        }
-
-        fprintf(file_out, "]\n");
+        output_str_ldr(file_out, &instr_list[i]);
+        fprintf(file_out, "\n");
       }
       else if (type == SUB)
       {

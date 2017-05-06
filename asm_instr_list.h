@@ -16,6 +16,8 @@
 #define GLOBL_ENTRY -1
 #define GLOBL_I_DIV -2
 #define SUB_LABEL   -3
+#define DATA_LABEL  -4
+#define CONST_LABEL -5
 
 #define SP (REGISTER+13)
 #define LR (REGISTER+14)
@@ -51,6 +53,8 @@ void add_instr(int type, int param1, int param2, int param3);
 void gen_header();
 void gen_footer();
 
+void add_data(int type, int param1, int param2, int param3);
+
 void output_asm(FILE*);
 
 
@@ -62,6 +66,8 @@ enum
   SEG_DATA,	//.data segment
   SEG_TEXT,	//.text (program) segment
   SEG_END,	//.end (end of program)
+
+  WORD,		//store global word (.word)
 
   GLOBL_LBL,	//define a label as global
   LABEL,	//insert a label
