@@ -41,15 +41,16 @@ void generate_asm(tree* ast)
     //multiplication or division
     else if (ast->nodeKind == TERM)
     {
-      generate_asm(ast->children[2]);
-      add_instr(MOV, R2, R0, 0);
       generate_asm(ast->children[0]);
+      add_instr(MOV, R2, R0, 0);
+      generate_asm(ast->children[2]);
 
       if (ast->children[1]->val == OPER_MUL)
-        add_instr(MUL, R0, R2, R0);
+        add_instr(MUL, R0, R0, R2);
       else
       {
-        add_instr(MOV, R1, R2, 0);
+        add_instr(MOV, R1, R0, 0);
+        add_instr(MOV, R0, R2, 0);
         add_instr(BL, GLOBL_I_DIV, 0,0);
       }
     }
