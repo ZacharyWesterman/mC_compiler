@@ -44,8 +44,8 @@ void gen_fn_output()
 
   //compare R0 to #0
   add_instr(CMP, R0, 0, 0);
-  add_instr(BGT, SUB_LABEL, 0, 0);
-  add_instr(BLT, SUB_LABEL, 1, 0);
+  add_instr(BGT, SUB_LABEL, 1, 0);
+  add_instr(BLT, SUB_LABEL, 0, 0);
 
   //if R0=0, "0\n"
   add_instr(MOV, R0, 48, 0);
@@ -71,7 +71,7 @@ void gen_fn_output()
   //move "-" into memory
   add_instr(MOV, R0, 45, 0);
   add_instr(STR, R0, SP, -5);
-  add_instr(SUB, R1, R0, 5);
+  add_instr(SUB, R1, SP, 5);
 
   //call to print
   add_instr(MOV, R7, 4, 0);
@@ -81,7 +81,8 @@ void gen_fn_output()
   add_instr(SWI, 0,0,0);
 
   //make R0 positive and continue
-  add_instr(SUB, R0, 0, R3);
+  add_instr(MOV, R0, 0, 0);
+  add_instr(SUB, R0, R0, R3);
   
   //if R0 is positive
   add_instr(LABEL, SUB_LABEL, 1, 0);
