@@ -220,6 +220,21 @@ void output_asm(FILE* file_out)
         fprintf(file_out, "\n");
       }
 
+      else if (type == LDR)
+      {
+        fprintf(file_out, "ldr ");
+
+        output_register(file_out, param1);
+
+        fprintf(file_out, ", [");
+        output_register(file_out, param2);
+
+        fprintf(file_out, ", ");
+        output_register(file_out, param3);
+
+        fprintf(file_out, "]\n");
+      }
+
       else if (type == MOV)
       {
         fprintf(file_out, "mov ");
