@@ -44,7 +44,7 @@ asm_instr_list.o: asm_instr_list.c asm_instr_list.h
 
 
 clean:
-	rm -f y.tab.* y.output lex.yy.* *.o *~ mcc     
+	rm -f y.tab.* y.output lex.yy.* *.o *~ mcc *.s   
 
 
 
