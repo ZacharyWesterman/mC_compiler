@@ -2,7 +2,7 @@
 #include "semantics.h"
 #include "symtab.h"
 
-#include "asm_instr_list.h"
+#include "generate_asm.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -42,32 +42,7 @@ int get_out_param(int argc, char* argv[], int in_param);
 
 void print_help(char* argv[]);
 
-void create_makefile(const char* finput)
-{
-  FILE* makefile = fopen("Makefile", "w");
-
-  if (makefile)
-  {
-    char buf[64];
-    strcpy(buf, finput);
-
-    int length = 0;
-    while (buf[length] != 0)
-      length++;
-
-    while (buf[length] != '.')
-      length--;
-
-    buf[length] = 0;
-
-
-    fprintf(makefile, "%s: %s.o\n\tld -o %s %s.o\n\n", buf, buf, buf, buf);
-    fprintf(makefile, "%s.o: %s\n\tas -o %s.o %s\n\n", buf, finput, buf, finput);
-    fprintf(makefile, "clean:\n\trm -vf %s.o %s", buf, buf);
-
-    fclose(makefile);
-  }
-}
+void create_makefile(const char* finput);
 
 
 //MAIN
@@ -165,6 +140,9 @@ int main(int argc, char* argv[])
       //assembly header
       gen_header();
 
+      //generate ARM assembly from AST
+      generate_asm(ast);
+
       //assembly footer
       gen_footer();
 
@@ -250,4 +228,32 @@ void print_help(char* argv[])
   fprintf(stdout, "\t-l, --list-asm\tShow generated ARM assembly.\n");
   fprintf(stdout, "\t-n, --no-output\tDo not create an output file.\n");
   fprintf(stdout, "\t-m, --makefile\tGenerate a makefile for the output.\n");
+}
+
+
+void create_makefile(const char* finput)
+{
+  FILE* makefile = fopen("Makefile", "w");
+
+  if (makefile)
+  {
+    char buf[64];
+    strcpy(buf, finput);
+
+    int length = 0;
+    while (buf[length] != 0)
+      length++;
+
+    while (buf[length] != '.')
+      length--;
+
+    buf[length] = 0;
+
+
+    fprintf(makefile, "%s: %s.o\n\tld -o %s %s.o\n\n", buf, buf, buf, buf);
+    fprintf(makefile, "%s.o: %s\n\tas -o %s.o %s\n\n", buf, finput, buf, finput);
+    fprintf(makefile, "clean:\n\trm -vf %s.o %s", buf, buf);
+
+    fclose(makefile);
+  }
 }
