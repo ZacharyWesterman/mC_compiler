@@ -121,7 +121,9 @@ void generate_asm(tree* ast)
     //Function return value is in R0.
     else if (ast->nodeKind == FUNCCALL)
     {
+      add_instr(ADD, SP, SP, curr_stack_offs);
       add_instr(PUSH, R2, 0,0);
+      add_instr(SUB, SP, SP, curr_stack_offs-4);
 
       if (ast->numChildren > 0)
       {
@@ -129,8 +131,13 @@ void generate_asm(tree* ast)
         add_instr(MOV, R0, R1, 0);
       }
 
+      add_instr(ADD, SP, SP, curr_stack_offs-4);
+      
+
       add_instr(BL, ast->children[0]->val, 0,0);
+      
       add_instr(POP, R2, 0,0);
+      add_instr(SUB, SP, SP, curr_stack_offs);
 
       add_instr(MOV, R1, R0, 0);
     }
