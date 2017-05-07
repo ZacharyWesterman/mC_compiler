@@ -9,7 +9,7 @@ Files required to build compiler:
 	func_signature.c   func_signature.h
          semantics.c   semantics.h
 	asm_instr_list.c   asm_instr_list.h
-	generate_asm.c   generate_asm.h
+	  generate_asm.c   generate_asm.h
 
             driver.c
             makefile
