@@ -27,8 +27,26 @@ void generate_asm(tree* ast)
 {
   if (ast)
   {
+    //iterative statement (while)
+    if (ast->nodeKind == LOOP)
+    {
+      int c_sub_label = sub_lbl_ctr;
+      sub_lbl_ctr+=2;
+
+      add_instr(LABEL, SUB_LABEL, c_sub_label, 0);
+
+      generate_asm(ast->children[0]);
+      add_instr(CMP, R1, 0, 0);
+      add_instr(BEQ, SUB_LABEL, c_sub_label+1, 0);
+
+      generate_asm(ast->children[1]);
+
+      add_instr(B, SUB_LABEL, c_sub_label, 0);
+      add_instr(LABEL, SUB_LABEL, c_sub_label+1, 0);
+        
+    }
     //conditional statements
-    if (ast->nodeKind == CONDITIONAL)
+    else if (ast->nodeKind == CONDITIONAL)
     {
       int c_sub_label = sub_lbl_ctr;
       sub_lbl_ctr++;
