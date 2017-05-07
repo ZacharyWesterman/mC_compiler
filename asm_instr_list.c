@@ -93,7 +93,7 @@ void gen_fn_output()
   add_instr(STR, R0, SP, -6);
   add_instr(MOV, R0, 10, 0);
   add_instr(STR, R0, SP, -5);
-  add_instr(SUB, R1, SP, 5);
+  add_instr(SUB, R1, SP, 6);
 
   //call to print
   add_instr(MOV, R7, 4, 0);
@@ -232,8 +232,8 @@ void gen_header()
 
   add_instr(B, GLOBL_ENTRY,0,0);
 
-  //gen_fn_output();
-  //gen_int_div();
+  gen_fn_output();
+  gen_int_div();
 
   sub_lbl_ctr = 8;
 
@@ -465,10 +465,22 @@ void output_asm(FILE* file_out)
         fprintf(file_out, "\n");
       }
 
-      else if ((type == MOV) || (type == SWP))
+      else if ((type >= MOV) && (type <= SWP))
       {
         if (type == MOV)
           fprintf(file_out, "mov ");
+        else if (type == MOVEQ)
+          fprintf(file_out, "moveq ");
+        else if (type == MOVNE)
+          fprintf(file_out, "movne ");
+        else if (type == MOVLT)
+          fprintf(file_out, "movlt ");
+        else if (type == MOVGT)
+          fprintf(file_out, "movgt ");
+        else if (type == MOVLE)
+          fprintf(file_out, "movle ");
+        else if (type == MOVGE)
+          fprintf(file_out, "movge ");
         else if (type == SWP)
           fprintf(file_out, "swp ");
 

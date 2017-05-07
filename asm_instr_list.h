@@ -109,6 +109,13 @@ enum
   //MRS,		//move PSR status/flags to register
   //MVN,		//move negative register
   MOV,		//move register or constant
+  MOVEQ,	//move if equal
+  MOVNE,	//move if not equal
+  MOVLT,	//move if less than
+  MOVGT,	//move if greater than
+  MOVLE,
+  MOVGE,
+
   SWP,		//swap registers
 
   PUSH,		//push to stack
