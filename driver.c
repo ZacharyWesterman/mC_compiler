@@ -23,14 +23,16 @@ enum
 {
   NONE = 	0x00,
   HELP = 	0x01,
+
   PRINT_AST = 	0x02,
+  PRINT_STAB =	0x04,
+  
+  LIST_ASM = 	0x08,
+  NO_OUTPUT = 	0x10,
 
-  LIST_ASM = 	0x04,
-  NO_OUTPUT = 	0x08,
+  GEN_MAKEFILE =0x20,
 
-  GEN_MAKEFILE =0x10,
-
-  UNKNOWN = 	0x20
+  UNKNOWN = 	0x40
 };
 
 
@@ -101,7 +103,8 @@ int main(int argc, char* argv[])
       if (checkSemantics(ast))
         return -1;
 
-      //print_symtab(table, 1);
+      if (cflags & PRINT_STAB)
+        print_symtab(table, 1);
 
       char foutbuf[64];
       foutbuf[0] = 0;
@@ -180,6 +183,8 @@ int read_cflags(int argc, char* argv[])
         cflags_out |= HELP;
       else if (!strcmp(buf, "-a") || !strcmp(argv[i], "--ast"))
         cflags_out |= PRINT_AST;
+      else if (!strcmp(buf, "-s") || !strcmp(argv[i], "--sym-tab"))
+        cflags_out |= PRINT_STAB;
       else if (!strcmp(buf, "-l") || !strcmp(argv[i], "--list-asm"))
         cflags_out |= LIST_ASM;
       else if (!strcmp(buf, "-n") || !strcmp(argv[i], "--no-output"))
@@ -225,6 +230,7 @@ void print_help(char* argv[])
   fprintf(stdout, "Flags:\n");
   fprintf(stdout, "\t-h, --help\tDisplay this help text.\n");
   fprintf(stdout, "\t-a, --ast\tDisplay the abstract syntax tree.\n");
+  fprintf(stdout, "\t-s, --sym-tab\tDisplay the symbol table.\n");
   fprintf(stdout, "\t-l, --list-asm\tShow generated ARM assembly.\n");
   fprintf(stdout, "\t-n, --no-output\tDo not create an output file.\n");
   fprintf(stdout, "\t-m, --makefile\tGenerate a makefile for the output.\n");
