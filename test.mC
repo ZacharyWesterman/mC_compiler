@@ -1,6 +1,7 @@
 int main()
 {
-  257;
+  output(10);
+  output(0);
 }
 
 
