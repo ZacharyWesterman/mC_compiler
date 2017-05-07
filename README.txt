@@ -7,8 +7,9 @@ Files required to build compiler:
                   tree.c   tree.h
                 symtab.c   symtab.h
 	func_signature.c   func_signature.h
-             semantics.h   semantics.c
+             semantics.c   semantics.h
 	asm_instr_list.c   asm_instr_list.h
+	  generate_asm.c   generate_asm.h
 
                 driver.c
                 makefile
