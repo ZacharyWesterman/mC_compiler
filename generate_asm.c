@@ -19,12 +19,44 @@ int scope;
 int stack_offs[1000];
 int curr_stack_offs;
 
+extern int sub_lbl_ctr;
+
+int f_end_sub_lbl;
+
 void generate_asm(tree* ast)
 {
   if (ast)
   {
+    //conditional statements
+    if (ast->nodeKind == CONDITIONAL)
+    {
+      int c_sub_label = sub_lbl_ctr;
+      sub_lbl_ctr++;
+
+      generate_asm(ast->children[0]);
+
+      add_instr(CMP, R1, 0, 0);
+      add_instr(BEQ, SUB_LABEL, c_sub_label, 0);
+
+      generate_asm(ast->children[1]);
+
+      if (ast->numChildren > 2)
+      {
+        add_instr(B, SUB_LABEL, c_sub_label+1, 0);
+        sub_lbl_ctr++;
+      }
+
+      add_instr(LABEL, SUB_LABEL, c_sub_label, 0);
+      
+      if (ast->numChildren > 2)
+      {
+        generate_asm(ast->children[2]);
+        add_instr(LABEL, SUB_LABEL, c_sub_label+1, 0);
+      }
+
+    }
     //Declaring variables
-    if (ast->nodeKind == VARDECL)
+    else if (ast->nodeKind == VARDECL)
     {
       //if the variable is local
       if (scope)
@@ -71,6 +103,8 @@ void generate_asm(tree* ast)
     //Function return value is in R0.
     else if (ast->nodeKind == FUNCCALL)
     {
+      add_instr(PUSH, R2, 0,0);
+
       if (ast->numChildren > 0)
       {
         generate_asm(ast->children[1]);
@@ -78,6 +112,8 @@ void generate_asm(tree* ast)
       }
 
       add_instr(BL, ast->children[0]->val, 0,0);
+      add_instr(POP, R2, 0,0);
+
       add_instr(MOV, R1, R0, 0);
     }
     //if we are assigning a value to a variable
@@ -183,12 +219,15 @@ void generate_asm(tree* ast)
     //The stack should be 8-byte aligned at all times.
     else if (ast->nodeKind == FUNCDECL)
     {
+      f_end_sub_lbl = sub_lbl_ctr;
+      sub_lbl_ctr++;
+
       add_instr(LABEL, ast->children[1]->val, 0, 0);
       
       int i;
-      add_instr(PUSH, R2, LR, 0); 
+      add_instr(PUSH, R1, LR, 0); 
 
-      for (i=R3; i<R12; i+=2)
+      for (i=R2; i<R11; i+=2)
         add_instr(PUSH, i, i+1, 0);         
 
       curr_stack_offs = 0;
@@ -197,10 +236,12 @@ void generate_asm(tree* ast)
       generate_asm(ast->children[3]);
       scope--;
 
-      for (i=R12; i>=R3; i-=2)
+      add_instr(LABEL, SUB_LABEL, f_end_sub_lbl, 0);
+
+      for (i=R11; i>=R2; i-=2)
         add_instr(POP, i-1, i, 0); 
 
-      add_instr(POP, R2, PC, 0); 
+      add_instr(POP, R1, PC, 0); 
     }
     //RETURN statement. moves R1 into R0(return value)
     //By default, statement "return;" returns 0.
@@ -215,6 +256,8 @@ void generate_asm(tree* ast)
       {
         add_instr(MOV, R0, 0, 0);
       }
+
+      add_instr(B, SUB_LABEL, f_end_sub_lbl, 0);
     }
     else
     {
