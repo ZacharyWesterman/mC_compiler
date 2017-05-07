@@ -47,7 +47,7 @@ generate_asm.o: generate_asm.c generate_asm.h
 
 
 clean:
-	rm -f y.tab.* y.output lex.yy.* *.o *~ mcc *.s   
+	rm -f y.tab.* y.output lex.yy.* *.o *~ mcc   
 
 
 
