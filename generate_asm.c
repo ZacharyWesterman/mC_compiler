@@ -146,39 +146,35 @@ void generate_asm(tree* ast)
       add_instr(MOV, R2, R1, 0);
       generate_asm(ast->children[2]);
 
+      add_instr(CMP, R2, R1, 0);
+
       if (ast->children[1]->val == OPER_GT)
       {
-        add_instr(CMP, R2, R1, 0);
         add_instr(MOVGT, R1, 1, 0);
         add_instr(MOVLE, R1, 0, 0);
       }
       else if (ast->children[1]->val == OPER_LT)
       {
-        add_instr(CMP, R2, R1, 0);
         add_instr(MOVLT, R1, 1, 0);
         add_instr(MOVGE, R1, 0, 0);
       }
       else  if (ast->children[1]->val == OPER_GTE)
       {
-        add_instr(CMP, R2, R1, 0);
         add_instr(MOVGE, R1, 1, 0);
         add_instr(MOVLT, R1, 0, 0);
       }
       else  if (ast->children[1]->val == OPER_LTE)
       {
-        add_instr(CMP, R2, R1, 0);
         add_instr(MOVLE, R1, 1, 0);
         add_instr(MOVGT, R1, 0, 0);
       }
       else  if (ast->children[1]->val == OPER_EQ)
       {
-        add_instr(CMP, R2, R1, 0);
         add_instr(MOVEQ, R1, 1, 0);
         add_instr(MOVNE, R1, 0, 0);
       }
       else //OPER_NEQ
       {
-        add_instr(CMP, R2, R1, 0);
         add_instr(MOVNE, R1, 1, 0);
         add_instr(MOVEQ, R1, 0, 0);
       }
