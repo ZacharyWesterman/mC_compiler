@@ -62,25 +62,21 @@ void ins_instr(int type, int param1, int param2, int param3, int i)
   if ((i < instr_max) && (i >= 0))
   {
     add_instr(instr_list[current_instr-1].type,
-              instr_list[current_instr-1].param1,
-              instr_list[current_instr-1].param2,
-              instr_list[current_instr-1].param3);
+              instr_list[current_instr-1].param[0],
+              instr_list[current_instr-1].param[1],
+              instr_list[current_instr-1].param[2]);
 
     int j;
     for (j=i; j<current_instr-1; j++)
     {
       set_instr(instr_list[j].type,
-                instr_list[j].param1,
-                instr_list[j].param2,
-                instr_list[j].param3,
+                instr_list[j].param[0],
+                instr_list[j].param[1],
+                instr_list[j].param[2],
                 j+1);
     }
 
-    set_instr(instr_list[current_instr-1].type,
-              instr_list[current_instr-1].param1,
-              instr_list[current_instr-1].param2,
-              instr_list[current_instr-1].param3,
-              i);
+    set_instr(type, param1, param2, param3, i);
   }
 }
 
