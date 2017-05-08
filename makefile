@@ -44,6 +44,7 @@ asm_instr_list.o: asm_instr_list.c asm_instr_list.h
 
 generate_asm.o: generate_asm.c generate_asm.h
 	gcc $(CFLAGS) -c generate_asm.c
+
 optimize_asm.o: optimize_asm.c optimize_asm.h
 	gcc $(CFLAGS) -c optimize_asm.c
 

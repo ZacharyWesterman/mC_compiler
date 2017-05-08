@@ -240,6 +240,7 @@ void generate_asm(tree* ast)
         add_instr(MOVEQ, R1, 0, 0);
       }
     }
+    //Inside a function.
     //Functions save all registers except R0 and R1.
     //The stack should be 8-byte aligned at all times.
     else if (ast->nodeKind == FUNCDECL)
