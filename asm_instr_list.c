@@ -13,6 +13,32 @@ int data_max = 0;
 
 int sub_lbl_ctr = 0;
 
+
+instr* inc_instr_size(instr* list)
+{
+  instr* buffer = list;
+
+  list = (instr*)malloc(sizeof(instr)*(instr_max+INSTR_BUF_CT));
+
+  int i;
+  int p;
+
+  for (i=0; i<instr_max; i++)
+  {
+    list[i].type = buffer[i].type;
+    
+    for (p=0; p<INSTR_MAX_PARAMS; p++)
+      list[i].param[p] = buffer[i].param[p];
+  }
+
+  instr_max += INSTR_BUF_CT;
+
+  free(buffer);
+
+  return list;
+}
+
+
 void add_instr(int type, int param1, int param2, int param3)
 {
   if (!instr_list)
@@ -23,16 +49,16 @@ void add_instr(int type, int param1, int param2, int param3)
   }
 
 
-  if (current_instr < instr_max)
-  {
-    instr_list[current_instr].type = type;
+  if (current_instr >= instr_max)
+    instr_list = inc_instr_size(instr_list);
 
-    instr_list[current_instr].param[0] = param1;
-    instr_list[current_instr].param[1] = param2;
-    instr_list[current_instr].param[2] = param3;
+  instr_list[current_instr].type = type;
 
-    current_instr++;
-  }
+  instr_list[current_instr].param[0] = param1;
+  instr_list[current_instr].param[1] = param2;
+  instr_list[current_instr].param[2] = param3;
+
+  current_instr++;
 }
 
 
@@ -59,7 +85,7 @@ void ins_instr(int type, int param1, int param2, int param3, int i)
   }
 
 
-  if ((i < instr_max) && (i >= 0))
+  if ((i <= instr_max) && (i >= 0))
   {
     add_instr(instr_list[current_instr-1].type,
               instr_list[current_instr-1].param[0],
@@ -81,6 +107,26 @@ void ins_instr(int type, int param1, int param2, int param3, int i)
 }
 
 
+void rmv_instr(int i)
+{
+  if (instr_list && (i < instr_max) && (i >= 0))
+  {
+
+    int j;
+    for (j=i+1; j<current_instr; j++)
+    {
+      set_instr(instr_list[j].type,
+                instr_list[j].param[0],
+                instr_list[j].param[1],
+                instr_list[j].param[2],
+                j-1);
+    }
+
+    current_instr--;
+  }
+}
+
+
 void add_data(int type, int param1, int param2, int param3)
 {
   if (!data_list)
@@ -91,16 +137,16 @@ void add_data(int type, int param1, int param2, int param3)
   }
 
 
-  if (current_data < data_max)
-  {
-    data_list[current_data].type = type;
+  if (current_data >= data_max)
+    data_list = inc_instr_size(data_list);
+    
+  data_list[current_data].type = type;
 
-    data_list[current_data].param[0] = param1;
-    data_list[current_data].param[1] = param2;
-    data_list[current_data].param[2] = param3;
+  data_list[current_data].param[0] = param1;
+  data_list[current_data].param[1] = param2;
+  data_list[current_data].param[2] = param3;
 
-    current_data++;
-  }
+  current_data++;
 }
 
 int data_label_exists(int param1, int param2)
