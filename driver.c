@@ -3,6 +3,7 @@
 #include "symtab.h"
 
 #include "generate_asm.h"
+#include "optimize_asm.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -32,7 +33,9 @@ enum
 
   GEN_MAKEFILE =0x20,
 
-  UNKNOWN = 	0x40
+  OPTIMIZE = 	0x40,
+
+  UNKNOWN = 	0x80
 };
 
 
@@ -142,12 +145,14 @@ int main(int argc, char* argv[])
 
       //assembly header
       gen_header();
-
       //generate ARM assembly from AST
       generate_asm(ast);
-
       //assembly footer
       gen_footer();
+
+      //apply optimizations
+      if (cflags & OPTIMIZE)
+        OPT_all();
 
       //output assembly
       if (cflags & LIST_ASM)
@@ -191,6 +196,8 @@ int read_cflags(int argc, char* argv[])
         cflags_out |= NO_OUTPUT;
       else if (!strcmp(buf, "-m") || !strcmp(argv[i], "--makefile"))
         cflags_out |= GEN_MAKEFILE;
+      else if (!strcmp(buf, "-o") || !strcmp(argv[i], "--optimize"))
+        cflags_out |= OPTIMIZE;
       else
         cflags_out |= UNKNOWN;
 
