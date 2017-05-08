@@ -50,6 +50,10 @@ struct instruction
 
 
 void add_instr(int type, int param1, int param2, int param3);
+void ins_instr(int type, int param1, int param2, int param3, int i);
+void set_instr(int type, int param1, int param2, int param3, int i);
+void rmv_instr(int i);
+
 void gen_header();
 void gen_footer();
 

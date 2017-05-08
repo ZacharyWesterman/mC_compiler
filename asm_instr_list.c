@@ -36,6 +36,55 @@ void add_instr(int type, int param1, int param2, int param3)
 }
 
 
+void set_instr(int type, int param1, int param2, int param3, int i)
+{
+  if ((i < instr_max) && (i >= 0))
+  {
+    instr_list[i].type = type;
+
+    instr_list[i].param[0] = param1;
+    instr_list[i].param[1] = param2;
+    instr_list[i].param[2] = param3;
+  }
+}
+
+
+void ins_instr(int type, int param1, int param2, int param3, int i)
+{
+  if (!instr_list)
+  {
+    instr_list = (instr*)malloc(sizeof(instr)*INSTR_BUF_CT);
+
+    instr_max = INSTR_BUF_CT;
+  }
+
+
+  if ((i < instr_max) && (i >= 0))
+  {
+    add_instr(instr_list[current_instr-1].type,
+              instr_list[current_instr-1].param1,
+              instr_list[current_instr-1].param2,
+              instr_list[current_instr-1].param3);
+
+    int j;
+    for (j=i; j<current_instr-1; j++)
+    {
+      set_instr(instr_list[j].type,
+                instr_list[j].param1,
+                instr_list[j].param2,
+                instr_list[j].param3,
+                j+1);
+    }
+
+    set_instr(instr_list[current_instr-1].type,
+              instr_list[current_instr-1].param1,
+              instr_list[current_instr-1].param2,
+              instr_list[current_instr-1].param3,
+              i);
+  }
+}
+
+
 void add_data(int type, int param1, int param2, int param3)
 {
   if (!data_list)
