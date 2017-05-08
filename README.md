@@ -25,3 +25,22 @@ Dependencies:
 
 To build, run make.
 
+Flags <><><><><><><><><><><><><><><><><><><><><><><>
+-h, --help: Displays help text
+-a, --ast: Displays abstract syntax tree
+-o, --opt: Optimize generated assembly IR
+-s, --sym-tab: Displays the symbol table
+-l, --list-asm: Shows generated ARM assembly
+-n, --no-output: No output created
+-m, --makefile: Generates Raspberry Pi MAKEFILE
+<><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+Optimizations <><><><><><><><><><><><><><><><><><><>
+Immediate rewrite optimization: If you load a value
+to a register and then imidiatly overwrite that value
+with a value that is unrelated, the first
+write is removed from code gen. 
+
+
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><>
