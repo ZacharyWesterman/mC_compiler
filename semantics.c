@@ -45,6 +45,8 @@ int current_scope;
 //keep track of the last dataType
 int lastType;
 
+//give an error if no main function
+int found_main;
 
 
 
@@ -69,6 +71,8 @@ int checkSemantics(tree* this)
   //We enter the program, initialize variables
   if (this->nodeKind == PROGRAM)
   {
+    found_main = 0;
+
     current_scope = GLOBAL;
     table = make_table(0);
 
@@ -211,6 +215,10 @@ int checkSemantics(tree* this)
   {
     current_scope = GLOBAL;
     table = leave_scope(table);
+
+    //have we found the main() function?
+    if (this->children[1]->val == 1)
+      found_main = 1;
   }
   //accessing a variable (check indexing and type)
   else if (this->nodeKind == VAR)
@@ -353,6 +361,16 @@ int checkSemantics(tree* this)
         this->line, strTable[id]);
         error++;
       }
+    }
+  }
+  else if (this->nodeKind == PROGRAM)
+  {
+    //give an error if the main() function was not
+    //specified anywhere in the input.
+    if (!found_main)
+    {
+      fprintf(stderr, "Error: Entry function 'int main()' is not defined\n");
+      error++;
     }
   }
 
