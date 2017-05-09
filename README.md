@@ -12,7 +12,7 @@ Files required to build compiler:
          semantics.c   semantics.h
 	asm_instr_list.c   asm_instr_list.h
 	  generate_asm.c   generate_asm.h
-          optmize_asm.c   optimize_asm.h    
+	optmize_asm.c   optimize_asm.h
             driver.c
             makefile
 
