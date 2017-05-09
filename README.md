@@ -25,7 +25,7 @@ Dependencies:
 
 To build, run make.
 
-Flags <><><><><><><><><><><><><><><><><><><><><><><>
+Flags ```
 -h, --help: Displays help text
 -a, --ast: Displays abstract syntax tree
 -o, --opt: Optimize generated assembly IR
@@ -33,11 +33,11 @@ Flags <><><><><><><><><><><><><><><><><><><><><><><>
 -l, --list-asm: Shows generated ARM assembly
 -n, --no-output: No output created
 -m, --makefile: Generates a MAKEFILE for the output
-<><><><><><><><><><><><><><><><><><><><><><><><><><>
+```
 
-Optimizations <><><><><><><><><><><><><><><><><><><>
-Immediate rewrite optimization: 
+Optimizations ```
+*Immediate rewrite optimization:*
   If a value is loaded into a register and then
   immediately overwritten with an unrelated value, 
   the first load is removed from code gen.
-<><><><><><><><><><><><><><><><><><><><><><><><><><>
+```
