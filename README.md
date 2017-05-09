@@ -38,7 +38,7 @@ Flags
 
 Optimizations 
 ```
-*Immediate rewrite optimization:*
+Immediate rewrite optimization:
   If a value is loaded into a register and then
   immediately overwritten with an unrelated value, 
   the first load is removed from code gen.
