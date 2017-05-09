@@ -188,6 +188,8 @@ int read_cflags(int argc, char* argv[])
         cflags_out |= HELP;
       else if (!strcmp(buf, "-a") || !strcmp(argv[i], "--ast"))
         cflags_out |= PRINT_AST;
+      else if (!strcmp(buf, "-o") || !strcmp(argv[i], "--opt"))
+        cflags_out |= OPTIMIZE;
       else if (!strcmp(buf, "-s") || !strcmp(argv[i], "--sym-tab"))
         cflags_out |= PRINT_STAB;
       else if (!strcmp(buf, "-l") || !strcmp(argv[i], "--list-asm"))
@@ -196,13 +198,8 @@ int read_cflags(int argc, char* argv[])
         cflags_out |= NO_OUTPUT;
       else if (!strcmp(buf, "-m") || !strcmp(argv[i], "--makefile"))
         cflags_out |= GEN_MAKEFILE;
-      else if (!strcmp(buf, "-o") || !strcmp(argv[i], "--optimize"))
-        cflags_out |= OPTIMIZE;
       else
         cflags_out |= UNKNOWN;
-
-
-      //fprintf(stdout, "%s [%x]\n", buf, cflags_out);
     }
   }
 
@@ -235,18 +232,19 @@ void print_help(char* argv[])
 {
   fprintf(stdout, "Usage: %s <flags> [input] <output>\n", argv[0]);
   fprintf(stdout, "Flags:\n");
-  fprintf(stdout, "\t-h, --help\tDisplay this help text.\n");
-  fprintf(stdout, "\t-a, --ast\tDisplay the abstract syntax tree.\n");
-  fprintf(stdout, "\t-s, --sym-tab\tDisplay the symbol table.\n");
-  fprintf(stdout, "\t-l, --list-asm\tShow generated ARM assembly.\n");
-  fprintf(stdout, "\t-n, --no-output\tDo not create an output file.\n");
-  fprintf(stdout, "\t-m, --makefile\tGenerate a makefile for the output.\n");
+  fprintf(stdout, "\t-h, --help       Displays help text\n");
+  fprintf(stdout, "\t-a, --ast        Displays abstract syntax tree\n");
+  fprintf(stdout, "\t-o, --opt        Optimize generated assembly IR\n");
+  fprintf(stdout, "\t-s, --sym-tab    Displays the symbol table\n");
+  fprintf(stdout, "\t-l, --list-asm   Shows generated ARM assembly\n");
+  fprintf(stdout, "\t-n, --no-output  No output created\n");
+  fprintf(stdout, "\t-m, --makefile   Generates a MAKEFILE for the output\n");
 }
 
 
 void create_makefile(const char* finput)
 {
-  FILE* makefile = fopen("Makefile", "w");
+  FILE* makefile = fopen("MAKEFILE", "w");
 
   if (makefile)
   {
