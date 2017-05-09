@@ -253,7 +253,8 @@ void generate_asm(tree* ast)
       int i;
       add_instr(PUSH, R1, LR, 0); 
 
-      for (i=R2; i<R11; i+=2)
+      //currently, no registers past R3 are altered
+      for (i=R2; i<=R3; i+=2)
         add_instr(PUSH, i, i+1, 0);         
 
       curr_stack_offs = 0;
@@ -264,7 +265,7 @@ void generate_asm(tree* ast)
 
       add_instr(LABEL, SUB_LABEL, f_end_sub_lbl, 0);
 
-      for (i=R11; i>=R2; i-=2)
+      for (i=R3; i>=R2; i-=2)
         add_instr(POP, i-1, i, 0); 
 
       add_instr(POP, R1, PC, 0); 
