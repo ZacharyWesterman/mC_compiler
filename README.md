@@ -12,7 +12,7 @@ Files required to build compiler:
          semantics.c   semantics.h
 	asm_instr_list.c   asm_instr_list.h
 	  generate_asm.c   generate_asm.h
-          optmize_asm.c optimize_asm.h    
+          optmize_asm.c   optimize_asm.h    
             driver.c
             makefile
 
@@ -32,15 +32,12 @@ Flags <><><><><><><><><><><><><><><><><><><><><><><>
 -s, --sym-tab: Displays the symbol table
 -l, --list-asm: Shows generated ARM assembly
 -n, --no-output: No output created
--m, --makefile: Generates Raspberry Pi MAKEFILE
+-m, --makefile: Generates a MAKEFILE for the output
 <><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 Optimizations <><><><><><><><><><><><><><><><><><><>
-Immediate rewrite optimization: If you load a value
-to a register and then imidiatly overwrite that value
-with a value that is unrelated, the first
-write is removed from code gen. 
-
-
-
+Immediate rewrite optimization: 
+  If a value is loaded into a register and then
+  immediately overwritten with an unrelated value, 
+  the first load is removed from code gen.
 <><><><><><><><><><><><><><><><><><><><><><><><><><>
