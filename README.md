@@ -25,7 +25,8 @@ Dependencies:
 
 To build, run make.
 
-Flags ```
+Flags 
+```
 -h, --help: Displays help text
 -a, --ast: Displays abstract syntax tree
 -o, --opt: Optimize generated assembly IR
@@ -35,7 +36,8 @@ Flags ```
 -m, --makefile: Generates a MAKEFILE for the output
 ```
 
-Optimizations ```
+Optimizations 
+```
 *Immediate rewrite optimization:*
   If a value is loaded into a register and then
   immediately overwritten with an unrelated value, 
